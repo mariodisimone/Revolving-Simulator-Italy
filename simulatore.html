@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simulatore Carta di Credito Revolving</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      position: relative;
+    }
+    .card {
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    .card-header {
+      margin-bottom: 20px;
+    }
+    .card-title {
+      font-size: 24px;
+      font-weight: bold;
+    }
+    .card-description {
+      color: #666;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+    }
+    .form-group input {
+      width: 100%;
+      padding: 8px;
+      box-sizing: border-box;
+    }
+    .btn {
+      width: 100%;
+      padding: 10px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-bottom: 10px;
+    }
+    .btn:hover {
+      background-color: #0056b3;
+    }
+    .btn-reset {
+      background-color: #dc3545;
+    }
+    .btn-reset:hover {
+      background-color: #c82333;
+    }
+    .results {
+      margin-top: 20px;
+    }
+    .results h2 {
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+    .results-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .results-grid div {
+      text-align: center;
+    }
+    .results-grid p {
+      margin: 0;
+    }
+    .results-grid .label {
+      font-size: 14px;
+      color: #666;
+    }
+    .results-grid .value {
+      font-size: 18px;
+      font-weight: bold;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    table th, table td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: center;
+    }
+    table th {
+      background-color: #f8f9fa;
+    }
+    .footer {
+      margin-top: 20px;
+      font-size: 12px;
+      display: flex;
+      justify-content: space-between;
+    }
+    .footer-left {
+      text-align: left;
+    }
+    .footer-right {
+      text-align: right;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Simulatore Carta di Credito Revolving</div>
+        <div class="card-description">Calcola il piano di ammortamento della tua carta revolving</div>
+      </div>
+      <div class="card-content">
+        <form id="calculatorForm">
+          <div class="form-group">
+            <label for="creditLine">Linea di credito (€)</label>
+            <input type="number" id="creditLine" min="0" step="0.01" required>
+          </div>
+          <div class="form-group">
+            <label for="balance">Saldo presente (€)</label>
+            <input type="number" id="balance" min="0" step="0.01" required>
+          </div>
+          <div class="form-group">
+            <label for="monthlyPayment">Rata mensile (€)</label>
+            <input type="number" id="monthlyPayment" min="0" step="0.01" required>
+          </div>
+          <div class="form-group">
+            <label for="annualRate">TAN (%)</label>
+            <input type="number" id="annualRate" min="0" step="0.01" required>
+          </div>
+          <div class="form-group">
+            <label for="initialStatement">Estratto conto iniziale (€)</label>
+            <input type="number" id="initialStatement" min="0" max="99.99" step="0.01" required>
+          </div>
+          <button type="submit" class="btn">Calcola</button>
+          <button type="button" class="btn btn-reset" id="resetButton">Azzera</button>
+        </form>
+      </div>
+    </div>
+
+    <div id="results" class="results" style="display: none;">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Risultati</div>
+        </div>
+        <div class="card-content">
+          <div class="results-grid">
+            <div>
+              <p class="label">Credito Residuo</p>
+              <p class="value" id="remainingCredit"></p>
+            </div>
+            <div>
+              <p class="label">Totale Rate</p>
+              <p class="value" id="totalPayments"></p>
+            </div>
+            <div>
+              <p class="label">Interessi Totali</p>
+              <p class="value" id="totalInterest"></p>
+            </div>
+            <div>
+              <p class="label">Costo Totale</p>
+              <p class="value" id="totalCost"></p>
+            </div>
+          </div>
+          <table id="paymentsTable">
+            <thead>
+              <tr>
+                <th>Numero Rata</th>
+                <th>Interessi (€)</th>
+                <th>Principale (€)</th>
+                <th>Debito Residuo (€)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Le righe della tabella verranno aggiunte dinamicamente -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <div class="footer-left">
+        Developed by M.D.S. System
+      </div>
+      <div class="footer-right">
+        <strong>Questo simulatore, come tutti, ha i suoi margini di errori, pertanto lo sviluppatore non si assume nessuna responsabilità.</strong>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function formatCurrency(value) {
+      return new Intl.NumberFormat("it-IT", { style: "currency", currency: "EUR" }).format(value);
+    }
+
+    function calculatePayments(values) {
+      const monthlyRate = values.annualRate / 100 / 12;
+      let debt = values.balance - values.initialStatement;
+      let totalInterest = 0;
+      const payments = [];
+      let paymentNumber = 0;
+
+      while (debt > 0) {
+        paymentNumber++;
+        const interest = debt * monthlyRate;
+        let principal = values.monthlyPayment - interest;
+
+        if (principal > debt) {
+          principal = debt;
+        }
+
+        debt -= principal;
+        totalInterest += interest;
+
+        payments.push({
+          number: paymentNumber,
+          interest,
+          principal,
+          remainingDebt: debt,
+        });
+      }
+
+      return {
+        remainingCredit: values.creditLine - values.balance + values.initialStatement,
+        totalPayments: paymentNumber,
+        totalInterest,
+        totalCost: values.balance + totalInterest - values.initialStatement,
+        payments,
+      };
+    }
+
+    document.getElementById("calculatorForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const values = {
+        creditLine: parseFloat(document.getElementById("creditLine").value),
+        balance: parseFloat(document.getElementById("balance").value),
+        monthlyPayment: parseFloat(document.getElementById("monthlyPayment").value),
+        annualRate: parseFloat(document.getElementById("annualRate").value),
+        initialStatement: parseFloat(document.getElementById("initialStatement").value),
+      };
+
+      const result = calculatePayments(values);
+
+      // Mostra i risultati
+      document.getElementById("remainingCredit").textContent = formatCurrency(result.remainingCredit);
+      document.getElementById("totalPayments").textContent = result.totalPayments;
+      document.getElementById("totalInterest").textContent = formatCurrency(result.totalInterest);
+      document.getElementById("totalCost").textContent = formatCurrency(result.totalCost);
+
+      // Popola la tabella
+      const tableBody = document.querySelector("#paymentsTable tbody");
+      tableBody.innerHTML = ""; // Pulisce la tabella
+      result.payments.forEach((payment) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${payment.number}</td>
+          <td>${formatCurrency(payment.interest)}</td>
+          <td>${formatCurrency(payment.principal)}</td>
+          <td>${formatCurrency(payment.remainingDebt)}</td>
+        `;
+        tableBody.appendChild(row);
+      });
+
+      // Mostra la sezione dei risultati
+      document.getElementById("results").style.display = "block";
+    });
+
+    document.getElementById("resetButton").addEventListener("click", function () {
+      // Resetta il form
+      document.getElementById("calculatorForm").reset();
+      // Nasconde i risultati
+      document.getElementById("results").style.display = "none";
+      // Pulisce la tabella
+      document.querySelector("#paymentsTable tbody").innerHTML = "";
+    });
+  </script>
+</body>
+</html>

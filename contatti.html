@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>M.D.S. System - Contatti</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+    }
+    header {
+      background-color: #007bff;
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+    nav {
+      background-color: #333;
+      overflow: hidden;
+    }
+    nav a {
+      float: left;
+      display: block;
+      color: white;
+      text-align: center;
+      padding: 14px 20px;
+      text-decoration: none;
+    }
+    nav a:hover {
+      background-color: #575757;
+    }
+    .container {
+      padding: 20px;
+    }
+    .contact-form {
+      max-width: 600px;
+      margin: 0 auto;
+      background-color: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .contact-form input, .contact-form textarea {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    .contact-form button {
+      background-color: #007bff;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .contact-form button:hover {
+      background-color: #0056b3;
+    }
+    footer {
+      background-color: #333;
+      color: white;
+      text-align: center;
+      padding: 10px;
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>M.D.S. System</h1>
+    <p>Contattaci per ulteriori informazioni</p>
+  </header>
+
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="simulatore.html">Simulatore</a>
+    <a href="contatti.html">Contatti</a>
+  </nav>
+
+  <div class="container">
+    <div class="contact-form">
+      <h2>Modulo di Contatto</h2>
+      <form id="contactForm">
+        <input type="text" id="name" placeholder="Nome e Cognome" required>
+        <input type="email" id="email" placeholder="Email" required>
+        <textarea id="message" rows="5" placeholder="Scrivi il tuo messaggio" required></textarea>
+        <button type="submit">Invia</button>
+      </form>
+    </div>
+  </div>
+
+  <footer>
+    <p>Developed by M.D.S. System | <strong>Questo simulatore, come tutti, ha i suoi margini di errori, pertanto lo sviluppatore non si assume nessuna responsabilità.</strong></p>
+  </footer>
+
+  <script>
+    document.getElementById("contactForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+      alert("Grazie per averci contattato! Ti risponderemo al più presto.");
+      document.getElementById("contactForm").reset();
+    });
+  </script>
+</body>
+</html>
